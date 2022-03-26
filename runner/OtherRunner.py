@@ -97,6 +97,7 @@ class OtherRunner(object):
         for i, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
+            y_pred = self.softmax(y_pred)
             y = y_pred.data
             loss = self.criterion(y_pred, target_set)
             test_loss += loss.data
@@ -120,6 +121,7 @@ class OtherRunner(object):
         for i, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
+            y_pred = self.softmax(y_pred)
             y = y_pred.data
             loss = self.criterion(y_pred, target_set)
             test_loss += loss.data

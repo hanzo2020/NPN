@@ -11,17 +11,17 @@ class NPN(nn.Module):
     def __init__(self):
         super(NPN, self).__init__()
         self.square = torch.nn.Parameter(utils.numpy_to_torch(
-            np.random.uniform(0, 1, size=[1, 32]).astype(np.float32)), requires_grad=False)
+            np.random.uniform(0, 1, size=[1, 64]).astype(np.float32)), requires_grad=False)
         self.sim_scale = 5
         self.net = nn.Sequential(#28X28
-            nn.Conv2d(3, 9, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#14X14
-            nn.Conv2d(9, 9, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#7X7
             Flatten(),#784
-            nn.Linear(441, 256),
+            nn.Linear(147, 64),
             nn.ReLU(),
-            nn.Linear(256, 32),
+            nn.Linear(64, 64),
             # nn.ReLU(),
             # nn.Linear(64, 1),
             # nn.Sigmoid()

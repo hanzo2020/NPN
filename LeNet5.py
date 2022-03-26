@@ -11,14 +11,14 @@ class LeNet5(nn.Module):
     def __init__(self):
         super(LeNet5, self).__init__()
         self.net = nn.Sequential(#28X28
-            nn.Conv2d(3, 6, kernel_size=3, stride=1, padding=0),#26X26
+            nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=0),#26X26
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),#13X13
-            nn.Conv2d(6, 16, kernel_size=3, stride=1, padding=0),#11X11
+            nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=0),#11X11
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),#5X5
             Flatten(),#400
-            nn.Linear(400, 256),
+            nn.Linear(75, 32),
             nn.Sigmoid(),
-            nn.Linear(256, 2),
+            nn.Linear(32, 2),
         )
         # self.softmax = nn.Softmax(dim=1)
     def forward(self, x):

@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\README.md">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\dataset\dataset_img.py">
           <value>
             <Attribute>
