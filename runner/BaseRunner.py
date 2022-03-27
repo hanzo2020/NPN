@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score
 import torch
 import torch.nn as nn
 import gc
@@ -15,39 +16,46 @@ from NPN import NPN
 from dataset.dataset_img import DatasetImg
 
 class BaseRunner(object):
-    def __init__(self, epoch=150):
+    def __init__(self, epoch=100):
         self.epoch = epoch
-        self.criterion = nn.BCELoss(reduction='sum')#二分类损失函数
+        self.criterion = nn.BCELoss(reduction='sum')#二分类损失函数, log的底数为e
 
 
     def fit(self, model, data_loader, device):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.0002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.02)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.05)
         train_loss = 0
         train_dict = {}
         y = 0
         label = 0
         count = 0
         up = 0
+        acc = 0
         down = 0
         for j, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
-            y = y_pred.item()
+            npy = y_pred.cpu().detach().numpy()
+            for y in range(len(npy)):
+                if npy[y] > 0.5:
+                    npy[y] = 1
+                else:
+                    npy[y] = 0
+            # y = y_pred.item()
             loss = self.criterion(y_pred, target_set)
-            label = target_set.item()
+            label = target_set.cpu().detach().numpy()
             train_loss += loss.data
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if (y > 0.5 and target_set == 1) or (y < 0.5 and target_set == 0):
-                up += 1
-            else:
-                down += 1
+            acc += accuracy_score(npy, label)
+            # if (y > 0.5 and target_set == 1) or (y < 0.5 and target_set == 0):
+            #     up += 1
+            # else:
+            #     down += 1
             count = count + 1
-        Acc = up / count
+        Acc = acc / count
         train_dict['Acc'] = Acc
         print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc))
-        print('label: {:.6f}'.format(label) + 'y: {:.6f}'.format(y))
         return train_dict
 
     def train(self, model, data_loader, device, val_loader, test_loader):
@@ -90,18 +98,23 @@ class BaseRunner(object):
         test_loss = 0
         count = 0
         up = 0
+        acc = 0
         down = 0
         for i, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
+            npy = y_pred.cpu().detach().numpy()
+            for y in range(len(npy)):
+                if npy[y] > 0.5:
+                    npy[y] = 1
+                else:
+                    npy[y] = 0
             loss = self.criterion(y_pred, target_set)
+            label = target_set.cpu().detach().numpy()
             test_loss += loss.data
-            if (y_pred.item() > 0.5 and target_set == 1) or (y_pred.item() < 0.5 and target_set == 0):
-                up += 1
-            else:
-                down += 1
+            acc += accuracy_score(npy, label)
             count += 1
-        Acc = up / count
+        Acc = acc / count
         val_dict['Acc'] = Acc
         print('Val Loss: {:.6f}'.format(test_loss / count) + 'Val Acc: {:.6f}'.format(Acc))
         return val_dict
@@ -112,19 +125,24 @@ class BaseRunner(object):
         test_dict = {}
         test_loss = 0
         count = 0
+        acc = 0
         up = 0
         down = 0
         for i, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
+            npy = y_pred.cpu().detach().numpy()
+            for y in range(len(npy)):
+                if npy[y] > 0.5:
+                    npy[y] = 1
+                else:
+                    npy[y] = 0
             loss = self.criterion(y_pred, target_set)
+            label = target_set.cpu().detach().numpy()
             test_loss += loss.data
-            if (y_pred.item() > 0.5 and target_set == 1) or (y_pred.item() < 0.5 and target_set == 0):
-                up += 1
-            else:
-                down += 1
+            acc += accuracy_score(npy, label)
             count += 1
-        Acc = up / count
+        Acc = acc / count
         test_dict['Acc'] = Acc
         print('Test Loss: {:.6f}'.format(test_loss / count) + 'Test Acc: {:.6f}'.format(Acc))
         return test_dict

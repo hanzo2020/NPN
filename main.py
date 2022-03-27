@@ -36,6 +36,8 @@ def get_args():
                         help='cuda device, i.e. 0 or cpu')
     parser.add_argument("--no-cuda", action="store_true",
                         help="Run on CPU instead of GPU (not recommended)")
+    parser.add_argument("--random_seed", type=int, default=1,
+                        help="Batch size to infer with")
     args = parser.parse_args()
     return args
 
@@ -76,13 +78,17 @@ def main():
         device = torch.device('cuda')
     else:
         device = torch.device('cuda:' + args.device)
+    if args.random_seed != 1:
+        torch.manual_seed(args.random_seed)
+        torch.cuda.manual_seed(args.random_seed)
+        np.random.seed(args.random_seed)
     model_name = eval(args.model_name)
     print('device:', device)
     train_path = 'dataset/train'
     print(train_path)
 
     train_loader, val_loader, test_loader = get_data_loader(args)
-    net = model_name().to(device)
+    net = model_name(device).to(device)
     # train(net, epoch=10, args=args, data_loader=train_loader, device=args.device)
     if args.model_name == 'NPN':
         run = BaseRunner()

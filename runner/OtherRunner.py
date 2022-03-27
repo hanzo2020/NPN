@@ -18,12 +18,12 @@ from dataset.dataset_img import DatasetImg
 class OtherRunner(object):
     def __init__(self, epoch=100):
         self.epoch = epoch
-        self.criterion = nn.CrossEntropyLoss(reduction='sum')
+        self.criterion = nn.BCELoss(reduction='sum')
         self.softmax = nn.Softmax(dim=1)
 
 
     def fit(self, model, data_loader, device):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)
         train_loss = 0
         train_dict = {}
         count = 0
@@ -34,7 +34,8 @@ class OtherRunner(object):
             y_pred = model(imgs)
             y_pred = self.softmax(y_pred)
             y = y_pred.data
-            loss = self.criterion(y_pred, target_set)
+            yl = y[0,0]
+            loss = self.criterion(yl, target_set)
             train_loss += loss.data
             optimizer.zero_grad()
             loss.backward()

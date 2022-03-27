@@ -54,13 +54,13 @@ def load_images_and_labels(dataset='shape', split='train', model_name='NPN', img
         for filename in filenames:
             if filename != '.DS_Store':
                 image_paths.append(os.path.join(true_folder, filename))
-                labels.append([1,0])
+                labels.append(1)
 
         filenames = sorted(os.listdir(false_folder))[:5000]
         for filename in filenames:
             if filename != '.DS_Store':
                 image_paths.append(os.path.join(false_folder, filename))
-                labels.append([0,1])
+                labels.append(0)
     return image_paths, labels
 
 def load_image_self(path, img_size, stride=32):
@@ -68,7 +68,10 @@ def load_image_self(path, img_size, stride=32):
     """
     img0 = cv2.imread(path)  # BGR
     assert img0 is not None, 'Image Not Found ' + path
+    # img0 = img0[:, :, 0]
     img = cv2.resize(img0, (img_size, img_size))
+
+
 
     # Convert
     img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB and HWC to CHW

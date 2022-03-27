@@ -8,11 +8,14 @@ import numpy as np
 
 
 class NPN(nn.Module):
-    def __init__(self):
+    def __init__(self, device):
         super(NPN, self).__init__()
-        self.square = torch.nn.Parameter(utils.numpy_to_torch(
+        self.device = device
+        self.triangle = torch.nn.Parameter(utils.numpy_to_torch(
             np.random.uniform(0, 1, size=[1, 64]).astype(np.float32)), requires_grad=False)
-        self.sim_scale = 5
+        self.true = torch.nn.Parameter(utils.numpy_to_torch(
+            np.random.uniform(0, 1, size=[1, 64]).astype(np.float32)), requires_grad=False)
+        self.sim_scale = 10
         self.net = nn.Sequential(#28X28
             nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#14X14
@@ -26,6 +29,22 @@ class NPN(nn.Module):
             # nn.Linear(64, 1),
             # nn.Sigmoid()
         )
+        self.belong_to = nn.Linear(128, 64)
+
+    def uniform_size(self, vector1, vector2, train=True):
+        if len(vector1.size()) < len(vector2.size()):
+            vector1 = vector1.expand_as(vector2)
+        else:
+            vector2 = vector2.expand_as(vector1)
+        if train:
+            r12 = torch.Tensor(vector1.size()[:-1]).uniform_(0, 1).bernoulli()
+            # r12 = utils.tensor_to_gpu(r12).unsqueeze(-1)
+            r12 = r12.unsqueeze(-1).to(self.device)
+            new_v1 = r12 * vector1 + (-r12 + 1) * vector2
+            new_v2 = r12 * vector2 + (-r12 + 1) * vector1
+            return new_v1, new_v2
+        return vector1, vector2
+
     def forward(self, x):
         prediction = self.predict(x)
 
@@ -40,7 +59,10 @@ class NPN(nn.Module):
 
     def predict(self, x):
         d = self.net(x)
-        prediction = self.similarity(d, self.square, sigmoid=True)
+        d, triangle = self.uniform_size(d, self.triangle, train=True)
+        vector = torch.cat((d, triangle), dim=-1)
+        d = self.belong_to(vector)
+        prediction = self.similarity(d, self.true, sigmoid=True)
         return prediction
 
 
