@@ -8,19 +8,22 @@ import numpy as np
 
 
 class LeNet5(nn.Module):
-    def __init__(self):
+    def __init__(self, device):
         super(LeNet5, self).__init__()
+        self.device = device
         self.net = nn.Sequential(#28X28
-            nn.Conv2d(3, 6, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#14X14
-            nn.Conv2d(6, 6, kernel_size=3, stride=1, padding=1),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#7X7
+            nn.Conv2d(3, 6, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),#14X14
+            nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),#7X7
             Flatten(),
 
         )
-        self.Linear1 = nn.Linear(294, 128)
+        self.Linear1 = nn.Linear(16*5*5, 120)
         self.sigmoid = nn.Sigmoid()
-        self.Linear2 = nn.Linear(64, 2)
+        self.Linear2 = nn.Linear(120, 2)
         # self.softmax = nn.Softmax(dim=1)
     def forward(self, x):
         x = self.net(x)

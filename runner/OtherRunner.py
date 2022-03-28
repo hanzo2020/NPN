@@ -5,6 +5,8 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import gc
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import recall_score
 import os
 import logging
 import argparse
@@ -18,43 +20,49 @@ from dataset.dataset_img import DatasetImg
 class OtherRunner(object):
     def __init__(self, epoch=100):
         self.epoch = epoch
-        self.criterion = nn.BCELoss(reduction='sum')
+        self.criterion = nn.CrossEntropyLoss()
         self.softmax = nn.Softmax(dim=1)
 
 
     def fit(self, model, data_loader, device):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.05)
         train_loss = 0
         train_dict = {}
         count = 0
-        up = 0
-        down = 0
+        acc = 0
+        pres = []
+        labels = []
         for j, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
-            y_pred = self.softmax(y_pred)
-            y = y_pred.data
-            yl = y[0,0]
-            loss = self.criterion(yl, target_set)
+            ys = self.softmax(y_pred)
+            npy = np.zeros(len(y_pred))
+            label = target_set.cpu().detach().numpy()
+            for z in range(len(y_pred)):
+                if ys[z, 1] < 0.5:
+                    npy[z] = 0
+                else:
+                    npy[z] = 1
+            loss = self.criterion(y_pred, target_set.to(torch.int64))
+            pres.extend(list(npy))
+            labels.extend(list(label))
+            acc += accuracy_score(npy, label)
             train_loss += loss.data
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if (y[0,0].item() > 0.5 and target_set[0,0].item() == 1) or (y[0,0].item() < 0.5 and target_set[0,0].item() == 0):
-                up += 1
-            else:
-                down += 1
             count = count + 1
-        Acc = up / count
+        Recall = recall_score(np.array(pres), np.array(labels))
+        train_dict['Recall'] = Recall
+        Acc = acc / count
         train_dict['Acc'] = Acc
-        print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc))
-        # print('label: {:.6f}'.format(str(label)) + 'y: {:.6f}'.format(str(y)))
+        print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(train_dict['Acc']) + 'Train Rec: {:.6f}'.format(Recall))
         return train_dict
 
     def train(self, model, data_loader, device, val_loader, test_loader):
-        train_best = {'epoch':0, 'train_Acc':0, 'val_Acc':0, 'test_Acc':0}
-        val_best = {'epoch':0, 'train_Acc':0, 'val_Acc':0, 'test_Acc':0}
-        test_best = {'epoch':0, 'train_Acc':0, 'val_Acc':0, 'test_Acc':0}
+        train_best = {'epoch': 0, 'train_Acc': 0, 'val_Acc': 0, 'test_Acc': 0}
+        val_best = {'epoch': 0, 'train_Acc': 0, 'val_Acc': 0, 'test_Acc': 0}
+        test_best = {'epoch': 0, 'train_Acc': 0, 'val_Acc': 0, 'test_Acc': 0}
         for i in range(self.epoch):
             print('epoch {}'.format(i + 1))
             train_dict = self.fit(model=model, data_loader=data_loader, device=device)
@@ -65,26 +73,36 @@ class OtherRunner(object):
                 train_best['epoch'] = i + 1
                 train_best['val_Acc'] = val_dict['Acc']
                 train_best['test_Acc'] = test_dict['Acc']
+                train_best['Recall'] = train_dict['Recall']
             if val_dict['Acc'] > val_best['val_Acc']:
                 val_best['train_Acc'] = train_dict['Acc']
                 val_best['epoch'] = i + 1
                 val_best['val_Acc'] = val_dict['Acc']
                 val_best['test_Acc'] = test_dict['Acc']
+                val_best['val_Recall'] = val_dict['Recall']
+                val_best['test_Recall'] = test_dict['Recall']
             if test_dict['Acc'] > test_best['val_Acc']:
                 test_best['train_Acc'] = train_dict['Acc']
                 test_best['epoch'] = i + 1
                 test_best['val_Acc'] = val_dict['Acc']
                 test_best['test_Acc'] = test_dict['Acc']
+                test_best['test_Recall'] = test_dict['Recall']
+                test_best['val_Recall'] = val_dict['Recall']
 
         print('best of train: epoch:' + str(train_best['epoch']) + 'train_Acc:' + str(
             train_best['train_Acc']) + 'val_Acc:' +
-              str(train_best['val_Acc']) + 'test_Acc:' + str(train_best['test_Acc']))
+              str(train_best['val_Acc']) + 'test_Acc:' + str(train_best['test_Acc']) + 'Recall:' + str(
+            train_best['Recall']))
         print(
             'best of val__: epoch:' + str(val_best['epoch']) + 'train_Acc:' + str(val_best['train_Acc']) + 'val_Acc:' +
-            str(val_best['val_Acc']) + 'test_Acc:' + str(val_best['test_Acc']))
+            str(val_best['val_Acc']) + 'test_Acc:' + str(val_best['test_Acc']) + 'val_Recall:' + str(
+                val_best['val_Recall']) +
+            'test_Recall' + str(val_best['test_Recall']))
         print(
             'best of test: epoch:' + str(test_best['epoch']) + 'train_Acc:' + str(test_best['train_Acc']) + 'val_Acc:' +
-            str(test_best['val_Acc']) + 'test_Acc:' + str(test_best['test_Acc']))
+            str(test_best['val_Acc']) + 'test_Acc:' + str(test_best['test_Acc']) + 'val_Recall:' + str(
+                val_best['val_Recall']) +
+            'test_Recall' + str(val_best['test_Recall']))
 
 
 
@@ -93,23 +111,31 @@ class OtherRunner(object):
         val_dict = {}
         test_loss = 0
         count = 0
-        up = 0
-        down = 0
+        acc = 0
+        pres = []
+        labels = []
         for i, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
-            y_pred = self.softmax(y_pred)
-            y = y_pred.data
-            loss = self.criterion(y_pred, target_set)
+            ys = self.softmax(y_pred)
+            npy = np.zeros(len(y_pred))
+            label = target_set.cpu().detach().numpy()
+            for z in range(len(y_pred)):
+                if ys[z, 1] < 0.5:
+                    npy[z] = 0
+                else:
+                    npy[z] = 1
+            loss = self.criterion(y_pred, target_set.to(torch.int64))
+            pres.extend(list(npy))
+            labels.extend(list(label))
+            acc += accuracy_score(npy, label)
             test_loss += loss.data
-            if (y[0,0].item() > 0.5 and target_set[0,0].item() == 1) or (y[0,0].item() < 0.5 and target_set[0,0].item() == 0):
-                up += 1
-            else:
-                down += 1
             count += 1
-        Acc = up / count
+        Recall = recall_score(np.array(pres), np.array(labels))
+        Acc = acc / count
         val_dict['Acc'] = Acc
-        print('Val Loss: {:.6f}'.format(test_loss / count) + 'Val Acc: {:.6f}'.format(Acc))
+        val_dict['Recall'] = Recall
+        print('Val Loss: {:.6f}'.format(test_loss / count) + 'Val Acc: {:.6f}'.format(val_dict['Acc']) + 'Val Rec: {:.6f}'.format(Recall))
         return val_dict
 
     def predict(self, model, data_loader, device):
@@ -117,21 +143,29 @@ class OtherRunner(object):
         test_loss = 0
         test_dict = {}
         count = 0
-        up = 0
-        down = 0
+        acc = 0
+        pres = []
+        labels = []
         for i, data in tqdm(enumerate(data_loader)):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
-            y_pred = self.softmax(y_pred)
-            y = y_pred.data
-            loss = self.criterion(y_pred, target_set)
+            ys = self.softmax(y_pred)
+            npy = np.zeros(len(y_pred))
+            label = target_set.cpu().detach().numpy()
+            for z in range(len(y_pred)):
+                if ys[z, 1] < 0.5:
+                    npy[z] = 0
+                else:
+                    npy[z] = 1
+            loss = self.criterion(y_pred, target_set.to(torch.int64))
+            pres.extend(list(npy))
+            labels.extend(list(label))
+            acc += accuracy_score(npy, label)
             test_loss += loss.data
-            if (y[0,0].item() > 0.5 and target_set[0,0].item() == 1) or (y[0,0].item() < 0.5 and target_set[0,0].item() == 0):
-                up += 1
-            else:
-                down += 1
             count += 1
-        Acc = up / count
+        Recall = recall_score(np.array(pres), np.array(labels))
+        Acc = acc / count
         test_dict['Acc'] = Acc
-        print('Test Loss: {:.6f}'.format(test_loss / count) + 'Test Acc: {:.6f}'.format(Acc))
+        test_dict['Recall'] = Recall
+        print('Test Loss: {:.6f}'.format(test_loss / count) + 'Test Acc: {:.6f}'.format(test_dict['Acc']) + 'Test Rec: {:.6f}'.format(Recall))
         return test_dict

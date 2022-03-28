@@ -18,8 +18,10 @@ class NPN(nn.Module):
         self.sim_scale = 10
         self.net = nn.Sequential(#28X28
             nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#14X14
             nn.Conv2d(3, 3, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#7X7
             Flatten(),#784
             nn.Linear(147, 64),
