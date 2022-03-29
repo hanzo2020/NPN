@@ -31,7 +31,11 @@ class NPN(nn.Module):
             # nn.Linear(64, 1),
             # nn.Sigmoid()
         )
-        self.belong_to = nn.Linear(128, 64)
+        self.belong_to = nn.Sequential(
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64)
+        )
 
     def uniform_size(self, vector1, vector2, train=True):
         if len(vector1.size()) < len(vector2.size()):

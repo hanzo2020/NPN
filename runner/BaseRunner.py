@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
+from sklearn.metrics import precision_score
 import torch
 import torch.nn as nn
 import gc
@@ -23,7 +24,7 @@ class BaseRunner(object):
 
 
     def fit(self, model, data_loader, device):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.00015, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.04)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.08)
         train_loss = 0
         train_dict = {}
         count = 0
@@ -54,10 +55,13 @@ class BaseRunner(object):
             #     down += 1
             count = count + 1
         Recall = recall_score(np.array(pres),np.array(labels))
+        Precision = precision_score(np.array(pres),np.array(labels))
         Acc = acc / count
         train_dict['Acc'] = Acc
         train_dict['Recall'] = Recall
-        print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc) + 'Train Rec: {:.6f}'.format(Recall))
+        train_dict['Precision'] = Precision
+        print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc) + 'Train Rec: {:.6f}'.format(Recall) +
+        'Train Pre: {:.6f}'.format(Precision))
         return train_dict
 
     def train(self, model, data_loader, device, val_loader, test_loader):
@@ -75,6 +79,7 @@ class BaseRunner(object):
                 train_best['val_Acc'] = val_dict['Acc']
                 train_best['test_Acc'] = test_dict['Acc']
                 train_best['Recall'] = train_dict['Recall']
+                train_best['Precision'] = train_dict['Precision']
             if val_dict['Acc'] > val_best['val_Acc']:
                 val_best['train_Acc'] = train_dict['Acc']
                 val_best['epoch'] = i + 1
@@ -82,6 +87,8 @@ class BaseRunner(object):
                 val_best['test_Acc'] = test_dict['Acc']
                 val_best['val_Recall'] = val_dict['Recall']
                 val_best['test_Recall'] = test_dict['Recall']
+                val_best['val_Pre'] = val_dict['Precision']
+                val_best['test_Pre'] = test_dict['Precision']
             if test_dict['Acc'] > test_best['val_Acc']:
                 test_best['train_Acc'] = train_dict['Acc']
                 test_best['epoch'] = i + 1
@@ -89,15 +96,23 @@ class BaseRunner(object):
                 test_best['test_Acc'] = test_dict['Acc']
                 test_best['test_Recall'] = test_dict['Recall']
                 test_best['val_Recall'] = val_dict['Recall']
+                test_best['test_Pre'] = test_dict['Precision']
+                test_best['val_Pre'] = val_dict['Precision']
 
-        print('best of train: epoch:' + str(train_best['epoch']) + 'train_Acc:' + str(train_best['train_Acc']) + 'val_Acc:' +
-              str(train_best['val_Acc']) + 'test_Acc:' + str(train_best['test_Acc']) + 'Recall:' + str(train_best['Recall']))
-        print('best of val__: epoch:' + str(val_best['epoch']) + 'train_Acc:' + str(val_best['train_Acc']) + 'val_Acc:' +
-              str(val_best['val_Acc']) + 'test_Acc:' + str(val_best['test_Acc']) + 'val_Recall:' + str(val_best['val_Recall']) +
-              'test_Recall' + str(val_best['test_Recall']))
-        print('best of test: epoch:' + str(test_best['epoch']) + 'train_Acc:' + str(test_best['train_Acc']) + 'val_Acc:' +
-              str(test_best['val_Acc']) + 'test_Acc:' + str(test_best['test_Acc']) + 'val_Recall:' + str(val_best['val_Recall']) +
-              'test_Recall' + str(val_best['test_Recall']))
+        print(
+            'best of train: epoch:' + str(train_best['epoch']) + 'train_Acc:{:.6f}'.format(train_best['train_Acc']) +
+            'val_Acc:{:.6f}'.format(train_best['val_Acc']) + 'test_Acc:{:.6f}'.format(train_best['test_Acc']) +
+            'train_Recall:{:.6f}'.format(train_best['Recall']) + 'train_Pre:{:.6f}'.format(train_best['Precision']))
+        print(
+            'best of val__: epoch:' + str(val_best['epoch']) + 'train_Acc:{:.6f}'.format(val_best['train_Acc']) +
+            'val_Acc:{:.6f}'.format(val_best['val_Acc']) + 'test_Acc:{:.6f}'.format(val_best['test_Acc']) +
+            'val_Recall:{:.6f}'.format(val_best['val_Recall']) + 'test_Recall:{:.6f}'.format(val_best['test_Recall']) +
+            'val_Pre:{:.6f}'.format(val_best['val_Pre']) + 'test_Pre:{:.6f}'.format(val_best['test_Pre']))
+        print(
+            'best of test: epoch:' + str(test_best['epoch']) + 'train_Acc:{:.6f}'.format(test_best['train_Acc']) +
+            'val_Acc:{:.6f}'.format(test_best['val_Acc']) + 'test_Acc:{:.6f}'.format(test_best['test_Acc']) +
+            'val_Recall:{:.6f}'.format(val_best['val_Recall']) + 'test_Recall:{:.6f}'.format(val_best['test_Recall']) +
+            'val_Pre:{:.6f}'.format(val_best['val_Pre']) + 'test_Pre:{:.6f}'.format(val_best['test_Pre']))
 
 
     def val(self, model, data_loader, device):
@@ -125,9 +140,11 @@ class BaseRunner(object):
             acc += accuracy_score(npy, label)
             count += 1
         Recall = recall_score(np.array(pres), np.array(labels))
+        Precision = precision_score(np.array(pres), np.array(labels))
         Acc = acc / count
         val_dict['Acc'] = Acc
         val_dict['Recall'] = Recall
+        val_dict['Precision'] = Precision
         print('Val Loss: {:.6f}'.format(test_loss / count) + 'Val Acc: {:.6f}'.format(Acc) + 'Val Rec: {:.6f}'.format(Recall))
         return val_dict
 
@@ -156,8 +173,10 @@ class BaseRunner(object):
             acc += accuracy_score(npy, label)
             count += 1
         Recall = recall_score(np.array(pres), np.array(labels))
+        Precision = precision_score(np.array(pres), np.array(labels))
         Acc = acc / count
         test_dict['Acc'] = Acc
         test_dict['Recall'] = Recall
+        test_dict['Precision'] = Precision
         print('Test Loss: {:.6f}'.format(test_loss / count) + 'Test Acc: {:.6f}'.format(Acc) + 'Test Rec: {:.6f}'.format(Recall))
         return test_dict
