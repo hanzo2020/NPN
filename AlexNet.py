@@ -4,18 +4,18 @@ import numpy as np
 from torch.autograd import Variable
 from Flatten import Flatten
 
-class AlexNet(nn.Module):
-    def __init__(self):
+class AlexNet(nn.Module):#input_size == 224X224
+    def __init__(self, device):
         super().__init__()
         self.conv1 = nn.Sequential(
-            nn.Conv2d(1, 96, kernel_size=11, stride=4, padding=1),
+            nn.Conv2d(3, 96, kernel_size=11, stride=4, padding=1),
             nn.ReLU()
         )
 
         self.max_pool1 = nn.MaxPool2d(kernel_size=3, stride=2)
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(96, 256, kernel_size=3, padding=2),
+            nn.Conv2d(96, 256, kernel_size=5, padding=2),
             nn.ReLU()
         )
 
@@ -47,7 +47,7 @@ class AlexNet(nn.Module):
             nn.Linear(4096, 4096),
             nn.ReLU(),
             nn.Dropout(p=0.5),
-            nn.Linear(4096, 10)
+            nn.Linear(4096, 2)
         )
 
 

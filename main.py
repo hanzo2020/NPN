@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import os
 import logging
+import torchvision.models as models
 import argparse
 from runner.BaseRunner import BaseRunner
 from runner.OtherRunner import OtherRunner
@@ -13,6 +14,9 @@ import torch.nn.functional as F
 from Flatten import Flatten
 from NPN import NPN
 from LeNet5 import LeNet5
+from AlexNet import AlexNet
+from VGG16 import VGG16
+from NPN224 import NPN224
 from dataset.dataset_img import DatasetImg
 
 # print('ok')
@@ -28,7 +32,9 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch-size", type=int, default=1,
                         help="Batch size to infer with")
-    parser.add_argument("--dataset", choices=["shape", "nine-circles"],
+    parser.add_argument("--img_size", type=int, default=28,
+                        help="Batch size to infer with")
+    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle"],
                         help="Use kandinsky patterns dataset")
     parser.add_argument('--model_name', type=str, default='NPN',
                              help='Choose model to run.')
@@ -43,13 +49,13 @@ def get_args():
 
 def get_data_loader(args, shuffle=True):
     dataset_train = DatasetImg(
-        args.dataset, 'train', args.model_name
+        args.dataset, 'train', args.model_name, img_size=args.img_size
     )
     dataset_val = DatasetImg(
-        args.dataset, 'val', args.model_name
+        args.dataset, 'val', args.model_name, img_size=args.img_size
     )
     dataset_test = DatasetImg(
-        args.dataset, 'test', args.model_name
+        args.dataset, 'test', args.model_name, img_size=args.img_size
     )
     train_loader = torch.utils.data.DataLoader(
         dataset_train,
@@ -69,6 +75,8 @@ def get_data_loader(args, shuffle=True):
     return train_loader, val_loader, test_loader
 
 def main():
+    resnet18 = models.resnet18()
+    vgg16 = models.vgg16()
     args = get_args()
     print('args ', args)
     if args.no_cuda:
@@ -90,7 +98,7 @@ def main():
     train_loader, val_loader, test_loader = get_data_loader(args)
     net = model_name(device).to(device)
     # train(net, epoch=10, args=args, data_loader=train_loader, device=args.device)
-    if args.model_name == 'NPN':
+    if args.model_name == 'NPN' or args.model_name == 'NPN224':
         run = BaseRunner()
     else:
         run = OtherRunner()

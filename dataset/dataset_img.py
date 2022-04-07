@@ -7,7 +7,7 @@ import numpy as np
 
 
 class DatasetImg(torch.utils.data.Dataset):
-    def __init__(self, dataset, split, model_name, img_size=28):
+    def __init__(self, dataset, split, model_name, img_size):
         self.img_size = img_size
         self.model_name = model_name
         assert split in {
