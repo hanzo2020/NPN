@@ -25,28 +25,28 @@ class VGG16(nn.Module):#input_size == 224X224
         self.conv3 = nn.Sequential(
             nn.Conv2d(128, 256, kernel_size=3, stride=1),  # 256 * 54 * 54
             nn.ReLU(),
-            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 256 * 54 * 54
-            # nn.ReLU(),
-            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 256 * 54 * 54
-            # nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 256 * 54 * 54
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 256 * 54 * 54
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, padding=1)  # pooling 256 * 28 * 28
         )
         self.conv4 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=3, stride=1),  # 512 * 26 * 26,这里本来变512
             nn.ReLU(),
-            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
-            # nn.ReLU(),
-            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
-            # nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, padding=1)  # pooling 512 * 14 * 14
         )
         self.conv5 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=3, stride=1),  # 512 * 12 * 12
             nn.ReLU(),
-            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
-            # nn.ReLU(),
-            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
-            # nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, padding=1),  # pooling 512 * 7 * 7
             Flatten()
         )

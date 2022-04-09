@@ -16,6 +16,8 @@ from NPN import NPN
 from LeNet5 import LeNet5
 from AlexNet import AlexNet
 from VGG16 import VGG16
+from VGG13 import VGG13
+from VGG10 import VGG10
 from NPN224 import NPN224
 from dataset.dataset_img import DatasetImg
 
@@ -34,7 +36,7 @@ def get_args():
                         help="Batch size to infer with")
     parser.add_argument("--img_size", type=int, default=28,
                         help="Batch size to infer with")
-    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle"],
+    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle", "CCS"],
                         help="Use kandinsky patterns dataset")
     parser.add_argument('--model_name', type=str, default='NPN',
                              help='Choose model to run.')

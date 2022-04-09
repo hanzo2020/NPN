@@ -33,7 +33,7 @@ class OtherRunner(object):
         acc = 0
         pres = []
         labels = []
-        for j, data in tqdm(enumerate(data_loader)):
+        for j, data in tqdm(list(enumerate(data_loader))):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
             ys = self.softmax(y_pred)
@@ -123,7 +123,7 @@ class OtherRunner(object):
         acc = 0
         pres = []
         labels = []
-        for i, data in tqdm(enumerate(data_loader)):
+        for i, data in tqdm(list(enumerate(data_loader))):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
             ys = self.softmax(y_pred)
@@ -157,7 +157,7 @@ class OtherRunner(object):
         acc = 0
         pres = []
         labels = []
-        for i, data in tqdm(enumerate(data_loader)):
+        for i, data in tqdm(list(enumerate(data_loader))):
             imgs, target_set = map(lambda x: x.to(device), data)
             y_pred = model(imgs)
             ys = self.softmax(y_pred)

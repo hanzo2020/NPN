@@ -31,6 +31,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\VGG16.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\dataset\dataset_img.py">
           <value>
             <Attribute>
@@ -53,6 +60,13 @@
           </value>
         </entry>
         <entry key="\runner\OtherRunner.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\test.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
