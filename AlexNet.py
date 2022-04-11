@@ -3,6 +3,7 @@ from torch import nn
 import numpy as np
 from torch.autograd import Variable
 from Flatten import Flatten
+import torchvision.models as models
 
 class AlexNet(nn.Module):#input_size == 224X224
     def __init__(self, device):

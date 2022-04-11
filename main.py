@@ -19,6 +19,7 @@ from VGG16 import VGG16
 from VGG13 import VGG13
 from VGG10 import VGG10
 from NPN224 import NPN224
+from ResNet18 import ResNet18
 from dataset.dataset_img import DatasetImg
 
 # print('ok')
