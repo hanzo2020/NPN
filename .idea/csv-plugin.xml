@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\JP\JP1.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\LeNet5.py">
           <value>
             <Attribute>
@@ -24,7 +31,35 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\NPNCCS.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\NPNMultiRunner8.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\NPN_8.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\README.md">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\ResNet18.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -38,7 +73,42 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\YOLOV3.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\YOLO\DarkNet.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\YOLO\YOLOV3.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\command.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\dataset\dataset_img.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\dataset\dataset_multi_img.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -53,6 +123,20 @@
           </value>
         </entry>
         <entry key="\runner\BaseRunner.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\runner\MultiRunner.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\runner\NPNMultiRunner.py">
           <value>
             <Attribute>
               <option name="separator" value="," />

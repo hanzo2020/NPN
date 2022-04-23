@@ -48,7 +48,7 @@ class AlexNet(nn.Module):#input_size == 224X224
             nn.Linear(4096, 4096),
             nn.ReLU(),
             nn.Dropout(p=0.5),
-            nn.Linear(4096, 2)
+            nn.Linear(4096, 4)
         )
 
 

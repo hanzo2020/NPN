@@ -10,6 +10,8 @@ import torchvision.models as models
 import argparse
 from runner.BaseRunner import BaseRunner
 from runner.OtherRunner import OtherRunner
+from runner.MultiRunner import MultiRunner
+from runner.NPNMultiRunner import NPNMultiRunner
 import torch.nn.functional as F
 from Flatten import Flatten
 from NPN import NPN
@@ -19,9 +21,10 @@ from VGG16 import VGG16
 from VGG13 import VGG13
 from VGG10 import VGG10
 from NPN224 import NPN224
+from NPNCCS import NPNCCS
 from ResNet18 import ResNet18
 from dataset.dataset_img import DatasetImg
-
+from dataset.dataset_multi_img import DatasetMImg
 # print('ok')
 
 # flag = torch.cuda.is_available()
@@ -33,11 +36,13 @@ from dataset.dataset_img import DatasetImg
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch-size", type=int, default=1,
+    parser.add_argument("--batch_size", type=int, default=1,
+                        help="Batch size to infer with")
+    parser.add_argument("--class_num", type=int, default=2,
                         help="Batch size to infer with")
     parser.add_argument("--img_size", type=int, default=28,
                         help="Batch size to infer with")
-    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle", "CCS"],
+    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle", "CCS", "three"],
                         help="Use kandinsky patterns dataset")
     parser.add_argument('--model_name', type=str, default='NPN',
                              help='Choose model to run.')
@@ -51,15 +56,26 @@ def get_args():
     return args
 
 def get_data_loader(args, shuffle=True):
-    dataset_train = DatasetImg(
-        args.dataset, 'train', args.model_name, img_size=args.img_size
-    )
-    dataset_val = DatasetImg(
-        args.dataset, 'val', args.model_name, img_size=args.img_size
-    )
-    dataset_test = DatasetImg(
-        args.dataset, 'test', args.model_name, img_size=args.img_size
-    )
+    if args.class_num == 2:
+        dataset_train = DatasetImg(
+            args.dataset, 'train', args.model_name, img_size=args.img_size
+        )
+        dataset_val = DatasetImg(
+            args.dataset, 'val', args.model_name, img_size=args.img_size
+        )
+        dataset_test = DatasetImg(
+            args.dataset, 'test', args.model_name, img_size=args.img_size
+        )
+    else:
+        dataset_train = DatasetMImg(
+            args.dataset, 'train', args.model_name, img_size=args.img_size, class_num=args.class_num
+        )
+        dataset_val = DatasetMImg(
+            args.dataset, 'val', args.model_name, img_size=args.img_size, class_num=args.class_num
+        )
+        dataset_test = DatasetMImg(
+            args.dataset, 'test', args.model_name, img_size=args.img_size, class_num=args.class_num
+        )
     train_loader = torch.utils.data.DataLoader(
         dataset_train,
         shuffle=shuffle,
@@ -78,8 +94,6 @@ def get_data_loader(args, shuffle=True):
     return train_loader, val_loader, test_loader
 
 def main():
-    resnet18 = models.resnet18()
-    vgg16 = models.vgg16()
     args = get_args()
     print('args ', args)
     if args.no_cuda:
@@ -103,6 +117,10 @@ def main():
     # train(net, epoch=10, args=args, data_loader=train_loader, device=args.device)
     if args.model_name == 'NPN' or args.model_name == 'NPN224':
         run = BaseRunner()
+    elif args.model_name == 'NPNCCS':
+        run = NPNMultiRunner(args.batch_size)
+    elif args.class_num > 2:
+        run = MultiRunner(args.batch_size)
     else:
         run = OtherRunner()
     run.train(net, data_loader=train_loader, device=device, val_loader=val_loader, test_loader=test_loader)
