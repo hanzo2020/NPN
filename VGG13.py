@@ -34,8 +34,8 @@ class VGG13(nn.Module):#input_size == 224X224
         self.conv4 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=3, stride=1),  # 512 * 26 * 26,这里本来变512
             nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
-            nn.ReLU(),
+            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
+            # nn.ReLU(),
             # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 26 * 26
             # nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, padding=1)  # pooling 512 * 14 * 14
@@ -43,8 +43,8 @@ class VGG13(nn.Module):#input_size == 224X224
         self.conv5 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=3, stride=1),  # 512 * 12 * 12
             nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
-            nn.ReLU(),
+            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
+            # nn.ReLU(),
             # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),  # 512 * 12 * 12
             # nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, padding=1),  # pooling 512 * 7 * 7
@@ -53,9 +53,11 @@ class VGG13(nn.Module):#input_size == 224X224
         self.fc = nn.Sequential(
             nn.Linear(256 * 7 * 7, 4096),
             nn.ReLU(),
+            nn.Dropout(p=0.2),
             nn.Linear(4096, 2048),
             nn.ReLU(),
-            nn.Linear(2048, 4)
+            nn.Dropout(p=0.2),
+            nn.Linear(2048, 40)
         )
 
     def forward(self, x):

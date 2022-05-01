@@ -20,7 +20,7 @@ from dataset.dataset_img import DatasetImg
 
 class NPNMultiRunner(object):
     def __init__(self, batch_size):
-        self.epoch = 100
+        self.epoch = 20
         self.criterion = nn.BCELoss(reduction='sum')#二分类损失函数, log的底数为e
         self.softmax = nn.Softmax(dim=1)
         self.batch_size = batch_size
@@ -37,7 +37,7 @@ class NPNMultiRunner(object):
             target = torch.zeros([len(target_set), 4])
             for i in range(len(target_set)):
                 target[i, int(target_set.data[i])] = 1
-            y_pred, zero_pre, one_pre, two_pre, three_pre = model(imgs)
+            y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
             _, pred = torch.max(y_pred.data, 1)
             loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
             loss_one = self.criterion(one_pre, target[:, 1].to(device))
@@ -51,6 +51,8 @@ class NPNMultiRunner(object):
             # label = target_set.cpu().detach().numpy()
             acc += torch.sum(pred == target_set.data)
             count += self.batch_size
+            if (epoch+1) % 20 == 0:
+                torch.save(concepts, 'concepts{0}.pth'.format(epoch+1))
         Acc = acc / count
         train_dict['Acc'] = Acc
         print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc))
@@ -104,7 +106,7 @@ class NPNMultiRunner(object):
             target = torch.zeros([len(target_set), 4])
             for i in range(len(target_set)):
                 target[i, int(target_set.data[i])] = 1
-            y_pred, zero_pre, one_pre, two_pre, three_pre = model(imgs)
+            y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
             _, pred = torch.max(y_pred.data, 1)
             loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
             loss_one = self.criterion(one_pre, target[:, 1].to(device))
@@ -130,7 +132,7 @@ class NPNMultiRunner(object):
             target = torch.zeros([len(target_set), 4])
             for i in range(len(target_set)):
                 target[i, int(target_set.data[i])] = 1
-            y_pred, zero_pre, one_pre, two_pre, three_pre = model(imgs)
+            y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
             _, pred = torch.max(y_pred.data, 1)
             loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
             loss_one = self.criterion(one_pre, target[:, 1].to(device))

@@ -20,7 +20,7 @@ from dataset.dataset_img import DatasetImg
 
 class MultiRunner(object):
     def __init__(self, batch_size):
-        self.epoch = 20
+        self.epoch = 100
         self.criterion = nn.CrossEntropyLoss()
         self.softmax = nn.Softmax(dim=1)
         self.batch_size = batch_size

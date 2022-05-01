@@ -64,8 +64,8 @@ class NPNCCS(nn.Module):
 
 
     def forward(self, x):
-        prediction, zero_pre, one_pre, two_pre, three_pre = self.predict(x)
-        return prediction, zero_pre, one_pre, two_pre, three_pre
+        prediction, zero_pre, one_pre, two_pre, three_pre, concepts = self.predict(x)
+        return prediction, zero_pre, one_pre, two_pre, three_pre, concepts
 
     def similarity(self, vector1, vector2, sigmoid=True):
         result = F.cosine_similarity(vector1, vector2, dim=-1)
@@ -103,6 +103,6 @@ class NPNCCS(nn.Module):
         three = self.belong_to(vector)
         three_pre = self.similarity(three, self.true, sigmoid=True)
         prediction = torch.stack((zero_pre,one_pre,two_pre,three_pre), dim=1)
-        return prediction, zero_pre, one_pre, two_pre, three_pre
+        return prediction, zero_pre, one_pre, two_pre, three_pre, concepts
 
 

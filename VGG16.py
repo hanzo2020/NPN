@@ -53,9 +53,11 @@ class VGG16(nn.Module):#input_size == 224X224
         self.fc = nn.Sequential(
             nn.Linear(256 * 7 * 7, 4096),
             nn.ReLU(),
+            nn.Dropout(p=0.2),
             nn.Linear(4096, 2048),
             nn.ReLU(),
-            nn.Linear(2048, 4)
+            nn.Dropout(p=0.2),
+            nn.Linear(2048, 40)
         )
 
     def forward(self, x):

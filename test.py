@@ -18,9 +18,9 @@ import numpy as np
 # print(vector)
 
 
-
-x = torch.randint(999,(4,))
-print(x)
+for i in range(100):
+    if (i+1) % 20 ==0:
+        print(i+1)
 
 
 # def similarity(vector1, vector2, sigmoid=True):

@@ -16,6 +16,7 @@ import torch.nn.functional as F
 from Flatten import Flatten
 from NPN import NPN
 from LeNet5 import LeNet5
+from VGG import VGG
 from AlexNet import AlexNet
 from VGG16 import VGG16
 from VGG13 import VGG13
