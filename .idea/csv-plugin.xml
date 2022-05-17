@@ -66,6 +66,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\VGG.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\VGG10.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\VGG16.py">
           <value>
             <Attribute>

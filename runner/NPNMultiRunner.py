@@ -19,11 +19,13 @@ from dataset.dataset_img import DatasetImg
 
 
 class NPNMultiRunner(object):
-    def __init__(self, batch_size):
-        self.epoch = 20
-        self.criterion = nn.BCELoss(reduction='sum')#二分类损失函数, log的底数为e
+    def __init__(self, batch_size, class_num):
+        self.epoch = 100
+        # self.criterion = nn.BCELoss(reduction='mean')#二分类损失函数, log的底数为e
+        self.criterion = nn.CrossEntropyLoss(reduction='sum')  # 二分类损失函数, log的底数为e
         self.softmax = nn.Softmax(dim=1)
         self.batch_size = batch_size
+        self.class_num = class_num
 
 
     def fit(self, model, data_loader, device, epoch):
@@ -34,16 +36,23 @@ class NPNMultiRunner(object):
         acc = 0
         for j, data in tqdm(enumerate(data_loader), ncols=100, mininterval=1):
             imgs, target_set = map(lambda x: x.to(device), data)
-            target = torch.zeros([len(target_set), 4])
-            for i in range(len(target_set)):
-                target[i, int(target_set.data[i])] = 1
-            y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
-            _, pred = torch.max(y_pred.data, 1)
-            loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
-            loss_one = self.criterion(one_pre, target[:, 1].to(device))
-            loss_two = self.criterion(two_pre, target[:, 2].to(device))
-            loss_three = self.criterion(three_pre, target[:, 3].to(device))
-            loss = (loss_zero + loss_one + loss_two + loss_three)
+            # target = torch.zeros([len(target_set), self.class_num])
+            # for i in range(len(target_set)):
+            #     target[i, int(target_set.data[i])] = 1
+            #_____________________________________________
+            # y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
+            # _, pred = torch.max(y_pred.data, 1)
+            # loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
+            # loss_one = self.criterion(one_pre, target[:, 1].to(device))
+            # loss_two = self.criterion(two_pre, target[:, 2].to(device))
+            # loss_three = self.criterion(three_pre, target[:, 3].to(device))
+            # loss = (loss_zero + loss_one + loss_two + loss_three)
+            # _____________________________________________
+            y_pred = model(imgs)
+            _, pred = torch.max(self.softmax(y_pred), 1)
+            # loss = self.criterion(y_pred, target.to(device))
+            loss = self.criterion(y_pred, target_set.to(torch.int64))
+            # _____________________________________________
             train_loss += loss.data
             optimizer.zero_grad()
             loss.backward()
@@ -51,8 +60,8 @@ class NPNMultiRunner(object):
             # label = target_set.cpu().detach().numpy()
             acc += torch.sum(pred == target_set.data)
             count += self.batch_size
-            if (epoch+1) % 20 == 0:
-                torch.save(concepts, 'concepts{0}.pth'.format(epoch+1))
+            # if (epoch+1) % 20 == 0:
+            #     torch.save(concepts, 'concepts{0}.pth'.format(epoch+1))
         Acc = acc / count
         train_dict['Acc'] = Acc
         print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc))
@@ -77,7 +86,7 @@ class NPNMultiRunner(object):
                 val_best['epoch'] = i + 1
                 val_best['val_Acc'] = val_dict['Acc']
                 val_best['test_Acc'] = test_dict['Acc']
-            if test_dict['Acc'] > test_best['val_Acc']:
+            if test_dict['Acc'] > test_best['test_Acc']:
                 test_best['train_Acc'] = train_dict['Acc']
                 test_best['epoch'] = i + 1
                 test_best['val_Acc'] = val_dict['Acc']
@@ -103,16 +112,23 @@ class NPNMultiRunner(object):
         acc = 0
         for j, data in tqdm(enumerate(data_loader), leave=False, ncols=100, mininterval=1):
             imgs, target_set = map(lambda x: x.to(device), data)
-            target = torch.zeros([len(target_set), 4])
-            for i in range(len(target_set)):
-                target[i, int(target_set.data[i])] = 1
-            y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
-            _, pred = torch.max(y_pred.data, 1)
-            loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
-            loss_one = self.criterion(one_pre, target[:, 1].to(device))
-            loss_two = self.criterion(two_pre, target[:, 2].to(device))
-            loss_three = self.criterion(three_pre, target[:, 3].to(device))
-            loss = loss_zero + loss_one + loss_two + loss_three
+            # target = torch.zeros([len(target_set), self.class_num])
+            # for i in range(len(target_set)):
+            #     target[i, int(target_set.data[i])] = 1
+            # _____________________________________________
+            # y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
+            # _, pred = torch.max(y_pred.data, 1)
+            # loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
+            # loss_one = self.criterion(one_pre, target[:, 1].to(device))
+            # loss_two = self.criterion(two_pre, target[:, 2].to(device))
+            # loss_three = self.criterion(three_pre, target[:, 3].to(device))
+            # loss = loss_zero + loss_one + loss_two + loss_three
+            # _____________________________________________
+            y_pred = model(imgs)
+            _, pred = torch.max(self.softmax(y_pred), 1)
+            # loss = self.criterion(y_pred, target.to(device))
+            loss = self.criterion(y_pred, target_set.to(torch.int64))
+            # _____________________________________________
             val_loss += loss.data
             acc += torch.sum(pred == target_set.data)
             count += self.batch_size
@@ -129,16 +145,23 @@ class NPNMultiRunner(object):
         acc = 0
         for j, data in tqdm(enumerate(data_loader), leave=False, ncols=100, mininterval=1):
             imgs, target_set = map(lambda x: x.to(device), data)
-            target = torch.zeros([len(target_set), 4])
-            for i in range(len(target_set)):
-                target[i, int(target_set.data[i])] = 1
-            y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
-            _, pred = torch.max(y_pred.data, 1)
-            loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
-            loss_one = self.criterion(one_pre, target[:, 1].to(device))
-            loss_two = self.criterion(two_pre, target[:, 2].to(device))
-            loss_three = self.criterion(three_pre, target[:, 3].to(device))
-            loss = loss_zero + loss_one + loss_two + loss_three
+            # target = torch.zeros([len(target_set), self.class_num])
+            # for i in range(len(target_set)):
+            #     target[i, int(target_set.data[i])] = 1
+            # _____________________________________________
+            # y_pred, zero_pre, one_pre, two_pre, three_pre, concepts = model(imgs)
+            # _, pred = torch.max(y_pred.data, 1)
+            # loss_zero = self.criterion(zero_pre, target[:, 0].to(device))
+            # loss_one = self.criterion(one_pre, target[:, 1].to(device))
+            # loss_two = self.criterion(two_pre, target[:, 2].to(device))
+            # loss_three = self.criterion(three_pre, target[:, 3].to(device))
+            # loss = loss_zero + loss_one + loss_two + loss_three
+            # _____________________________________________
+            y_pred = model(imgs)
+            _, pred = torch.max(self.softmax(y_pred), 1)
+            # loss = self.criterion(y_pred, target.to(device))
+            loss = self.criterion(y_pred, target_set.to(torch.int64))
+            # _____________________________________________
             test_loss += loss.data
             acc += torch.sum(pred == target_set.data)
             count += self.batch_size

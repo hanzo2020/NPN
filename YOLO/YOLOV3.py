@@ -50,15 +50,17 @@ class YoloBody(nn.Module):
         #   计算yolo_head的输出通道数，对于voc数据集而言
         #   final_out_filter0 = final_out_filter1 = final_out_filter2 = 75
         #------------------------------------------------------------------------#
-        self.last_layer0            = make_last_layers([512, 1024], out_filters[-1], len(anchors_mask[0]) * (num_classes + 5))
+        self.last_layer0 = make_last_layers([512, 1024], out_filters[-1], len(anchors_mask[0]) * (num_classes + 5))
 
-        self.last_layer1_conv       = conv2d(512, 256, 1)
-        self.last_layer1_upsample   = nn.Upsample(scale_factor=2, mode='nearest')
-        self.last_layer1            = make_last_layers([256, 512], out_filters[-2] + 256, len(anchors_mask[1]) * (num_classes + 5))
+        self.last_layer1_conv = conv2d(512, 256, 1)
+        self.last_layer1_upsample = nn.Upsample(scale_factor=2, mode='nearest')
+        #26X26X256
+        self.last_layer1 = make_last_layers([256, 512], out_filters[-2] + 256, len(anchors_mask[1]) * (num_classes + 5))
 
-        self.last_layer2_conv       = conv2d(256, 128, 1)
-        self.last_layer2_upsample   = nn.Upsample(scale_factor=2, mode='nearest')
-        self.last_layer2            = make_last_layers([128, 256], out_filters[-3] + 128, len(anchors_mask[2]) * (num_classes + 5))
+        self.last_layer2_conv = conv2d(256, 128, 1)
+        self.last_layer2_upsample = nn.Upsample(scale_factor=2, mode='nearest')
+        #52X52X128
+        self.last_layer2 = make_last_layers([128, 256], out_filters[-3] + 128, len(anchors_mask[2]) * (num_classes + 5))
 
     def forward(self, x):
         #---------------------------------------------------#

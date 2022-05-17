@@ -20,7 +20,7 @@ from dataset.dataset_img import DatasetImg
 
 class MultiRunner(object):
     def __init__(self, batch_size):
-        self.epoch = 100
+        self.epoch = 50
         self.criterion = nn.CrossEntropyLoss()
         self.softmax = nn.Softmax(dim=1)
         self.batch_size = batch_size
@@ -68,7 +68,7 @@ class MultiRunner(object):
                 val_best['epoch'] = i + 1
                 val_best['val_Acc'] = val_dict['Acc']
                 val_best['test_Acc'] = test_dict['Acc']
-            if test_dict['Acc'] > test_best['val_Acc']:
+            if test_dict['Acc'] > test_best['test_Acc']:
                 test_best['train_Acc'] = train_dict['Acc']
                 test_best['epoch'] = i + 1
                 test_best['val_Acc'] = val_dict['Acc']

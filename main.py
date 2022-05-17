@@ -57,26 +57,29 @@ def get_args():
     return args
 
 def get_data_loader(args, shuffle=True):
-    if args.class_num == 2:
-        dataset_train = DatasetImg(
-            args.dataset, 'train', args.model_name, img_size=args.img_size
-        )
-        dataset_val = DatasetImg(
-            args.dataset, 'val', args.model_name, img_size=args.img_size
-        )
-        dataset_test = DatasetImg(
-            args.dataset, 'test', args.model_name, img_size=args.img_size
-        )
-    else:
-        dataset_train = DatasetMImg(
-            args.dataset, 'train', args.model_name, img_size=args.img_size, class_num=args.class_num
-        )
-        dataset_val = DatasetMImg(
-            args.dataset, 'val', args.model_name, img_size=args.img_size, class_num=args.class_num
-        )
-        dataset_test = DatasetMImg(
-            args.dataset, 'test', args.model_name, img_size=args.img_size, class_num=args.class_num
-        )
+    # if args.class_num == 2:
+    #     dataset_train = DatasetImg(
+    #         args.dataset, 'train', args.model_name, img_size=args.img_size
+    #     )
+    #     dataset_val = DatasetImg(
+    #         args.dataset, 'val', args.model_name, img_size=args.img_size
+    #     )
+    #     dataset_test = DatasetImg(
+    #         args.dataset, 'test', args.model_name, img_size=args.img_size
+    #     )
+    # else:
+    dataset_train = DatasetMImg(
+        args.dataset, 'train', args.model_name, img_size=args.img_size, class_num=args.class_num
+    )
+    dataset_val = DatasetMImg(
+           args.dataset, 'val', args.model_name, img_size=args.img_size, class_num=args.class_num
+    )
+    dataset_test = DatasetMImg(
+           args.dataset, 'test', args.model_name, img_size=args.img_size, class_num=args.class_num
+    )
+    print('num_train:' + str(len(dataset_train.labels)))
+    print('num_val:' + str(len(dataset_val.labels)))
+    print('num_test:' + str(len(dataset_test.labels)))
     train_loader = torch.utils.data.DataLoader(
         dataset_train,
         shuffle=shuffle,
@@ -110,16 +113,19 @@ def main():
         np.random.seed(args.random_seed)
     model_name = eval(args.model_name)
     print('device:', device)
-    train_path = 'dataset/train'
-    print(train_path)
+    # train_path = 'dataset/train'
+    # print(train_path)
 
     train_loader, val_loader, test_loader = get_data_loader(args)
-    net = model_name(device).to(device)
+    if args.model_name == 'NPNCCS':
+        net = model_name(device, args.class_num, args.batch_size).to(device)
+    else:
+        net = model_name(device).to(device)
     # train(net, epoch=10, args=args, data_loader=train_loader, device=args.device)
     if args.model_name == 'NPN' or args.model_name == 'NPN224':
         run = BaseRunner()
     elif args.model_name == 'NPNCCS':
-        run = NPNMultiRunner(args.batch_size)
+        run = NPNMultiRunner(args.batch_size, args.class_num)
     elif args.class_num > 2:
         run = MultiRunner(args.batch_size)
     else:

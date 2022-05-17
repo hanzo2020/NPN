@@ -24,7 +24,7 @@ class BaseRunner(object):
 
 
     def fit(self, model, data_loader, device):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.06)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.02)
         train_loss = 0
         train_dict = {}
         count = 0

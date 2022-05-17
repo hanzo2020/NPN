@@ -17,10 +17,17 @@ import numpy as np
 # vector = torch.cat((x, zero), dim=-1)
 # print(vector)
 
+d = torch.rand(3, 5)
+# d1 = d.expand(2, 3, 5)
+# d2 = d1.transpose(0,1)
+d1 = d.shape[1]
+print(d1)
 
-for i in range(100):
-    if (i+1) % 20 ==0:
-        print(i+1)
+# concept = torch.arange(0,6,dtype=int)
+# print(concept)
+# for i in range(100):
+#     if (i+1) % 20 ==0:
+#         print(i+1)
 
 
 # def similarity(vector1, vector2, sigmoid=True):
