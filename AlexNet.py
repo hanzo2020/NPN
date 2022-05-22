@@ -6,8 +6,9 @@ from Flatten import Flatten
 import torchvision.models as models
 
 class AlexNet(nn.Module):#input_size == 224X224
-    def __init__(self, device):
+    def __init__(self, class_num):
         super().__init__()
+        self.class_num = class_num
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 96, kernel_size=11, stride=4, padding=1),
             nn.ReLU()
@@ -48,7 +49,7 @@ class AlexNet(nn.Module):#input_size == 224X224
             nn.Linear(4096, 4096),
             nn.ReLU(),
             nn.Dropout(p=0.5),
-            nn.Linear(4096, 40)
+            nn.Linear(4096, self.class_num)
         )
 
 

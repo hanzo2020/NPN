@@ -24,6 +24,10 @@ from VGG10 import VGG10
 from NPN224 import NPN224
 from NPNCCS import NPNCCS
 from ResNet18 import ResNet18
+from ResNet34 import ResNet34
+from MobileNet import MobileNetV3_Small
+from MobileNet import MobileNetV3_Large
+from EfficientNet import EfficientNet
 from dataset.dataset_img import DatasetImg
 from dataset.dataset_multi_img import DatasetMImg
 # print('ok')
@@ -43,7 +47,7 @@ def get_args():
                         help="Batch size to infer with")
     parser.add_argument("--img_size", type=int, default=28,
                         help="Batch size to infer with")
-    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle", "CCS", "three"],
+    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle", "CCS", "WH"],
                         help="Use kandinsky patterns dataset")
     parser.add_argument('--model_name', type=str, default='NPN',
                              help='Choose model to run.')
@@ -51,8 +55,10 @@ def get_args():
                         help='cuda device, i.e. 0 or cpu')
     parser.add_argument("--no-cuda", action="store_true",
                         help="Run on CPU instead of GPU (not recommended)")
+    parser.add_argument("--lr", type=float, default=0.0001,
+                        help="Learning rate")
     parser.add_argument("--random_seed", type=int, default=1,
-                        help="Batch size to infer with")
+                        help="seed")
     args = parser.parse_args()
     return args
 
@@ -120,14 +126,14 @@ def main():
     if args.model_name == 'NPNCCS':
         net = model_name(device, args.class_num, args.batch_size).to(device)
     else:
-        net = model_name(device).to(device)
+        net = model_name(args.class_num).to(device)
     # train(net, epoch=10, args=args, data_loader=train_loader, device=args.device)
     if args.model_name == 'NPN' or args.model_name == 'NPN224':
         run = BaseRunner()
     elif args.model_name == 'NPNCCS':
-        run = NPNMultiRunner(args.batch_size, args.class_num)
+        run = NPNMultiRunner(args.batch_size, args.class_num, args.lr)
     elif args.class_num > 2:
-        run = MultiRunner(args.batch_size)
+        run = MultiRunner(args.batch_size, args.lr)
     else:
         run = OtherRunner()
     run.train(net, data_loader=train_loader, device=device, val_loader=val_loader, test_loader=test_loader)

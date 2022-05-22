@@ -19,15 +19,16 @@ from dataset.dataset_img import DatasetImg
 
 
 class MultiRunner(object):
-    def __init__(self, batch_size):
-        self.epoch = 50
+    def __init__(self, batch_size, lr):
+        self.epoch = 100
         self.criterion = nn.CrossEntropyLoss()
         self.softmax = nn.Softmax(dim=1)
         self.batch_size = batch_size
+        self.lr = lr
 
 
     def fit(self, model, data_loader, device):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.02)
+        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.02)
         train_loss = 0
         train_dict = {}
         count = 0

@@ -19,17 +19,18 @@ from dataset.dataset_img import DatasetImg
 
 
 class NPNMultiRunner(object):
-    def __init__(self, batch_size, class_num):
+    def __init__(self, batch_size, class_num, lr):
         self.epoch = 100
         # self.criterion = nn.BCELoss(reduction='mean')#二分类损失函数, log的底数为e
         self.criterion = nn.CrossEntropyLoss(reduction='sum')  # 二分类损失函数, log的底数为e
         self.softmax = nn.Softmax(dim=1)
         self.batch_size = batch_size
         self.class_num = class_num
+        self.lr = lr
 
 
     def fit(self, model, data_loader, device, epoch):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)
+        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)
         train_loss = 0
         train_dict = {}
         count = 0

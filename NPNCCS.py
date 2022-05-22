@@ -13,7 +13,7 @@ class NPNCCS(nn.Module):
         self.device = device
         self.batch_size = batch_size
         self.class_num = class_num
-        self.obj_dimension = 64
+        self.obj_dimension = 128
         self.concept_embeddings = torch.nn.Embedding(self.class_num, self.obj_dimension)
         # self.concept = torch.tensor([0,1,2,3])
         self.concept = torch.arange(0, self.class_num, dtype=int)
@@ -51,9 +51,11 @@ class NPNCCS(nn.Module):
             Flatten(),#1568
             nn.Linear(256 * 7 * 7, 4096),
             nn.LeakyReLU(0.1),
+            # nn.ReLU(),
             nn.Dropout(p=0.1),
             nn.Linear(4096, 2048),
             nn.LeakyReLU(0.1),
+            # nn.ReLU(),
             nn.Dropout(p=0.1),
             nn.Linear(2048, self.obj_dimension),
             # nn.Sigmoid()
@@ -61,6 +63,7 @@ class NPNCCS(nn.Module):
         self.belong_to = nn.Sequential(
             nn.Linear(2 * self.obj_dimension, 2 * self.obj_dimension),
             nn.LeakyReLU(0.1),
+            # nn.ReLU(),
             nn.Dropout(p=0.1),
             nn.Linear(2 * self.obj_dimension, self.obj_dimension)
         )

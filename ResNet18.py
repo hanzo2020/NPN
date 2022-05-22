@@ -42,8 +42,9 @@ class RestNetDownBlock(nn.Module):
 
 
 class ResNet18(nn.Module):
-    def __init__(self, device):
+    def __init__(self, class_num):
         super(ResNet18, self).__init__()
+        self.class_num = class_num
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3)
         self.bn1 = nn.BatchNorm2d(64)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -62,7 +63,7 @@ class ResNet18(nn.Module):
 
         self.avgpool = nn.AdaptiveAvgPool2d(output_size=(1, 1))
 
-        self.fc = nn.Linear(512, 40)
+        self.fc = nn.Linear(512, self.class_num)
 
     def forward(self, x):
         out = self.conv1(x)

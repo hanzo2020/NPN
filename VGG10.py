@@ -5,9 +5,10 @@ from torch.autograd import Variable
 from Flatten import Flatten
 
 class VGG10(nn.Module):#input_size == 224X224
-    def __init__(self, device):
+    def __init__(self, class_num):
         super().__init__()
         # 3 * 224 * 224
+        self.class_num = class_num
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, stride=1),  # 64 * 222 * 222
             nn.ReLU(),
@@ -57,7 +58,7 @@ class VGG10(nn.Module):#input_size == 224X224
             nn.Linear(4096, 2048),
             nn.ReLU(),
             nn.Dropout(p=0.2),
-            nn.Linear(2048, 40)
+            nn.Linear(2048, self.class_num)
         )
 
     def forward(self, x):

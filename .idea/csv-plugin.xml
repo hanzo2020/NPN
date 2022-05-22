@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\EfficientNet.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\JP\JP1.py">
           <value>
             <Attribute>
@@ -60,6 +67,13 @@
           </value>
         </entry>
         <entry key="\ResNet18.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\ResNet34.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
