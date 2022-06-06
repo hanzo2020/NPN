@@ -21,6 +21,7 @@ from AlexNet import AlexNet
 from VGG16 import VGG16
 from VGG13 import VGG13
 from VGG10 import VGG10
+from VGG11bn import VGG11git
 from NPN224 import NPN224
 from NPNCCS import NPNCCS
 from ResNet18 import ResNet18
@@ -28,6 +29,8 @@ from ResNet34 import ResNet34
 from MobileNet import MobileNetV3_Small
 from MobileNet import MobileNetV3_Large
 from EfficientNet import EfficientNet
+from ResNPN import ResNPN
+from NPNEYE import NPNEYE
 from dataset.dataset_img import DatasetImg
 from dataset.dataset_multi_img import DatasetMImg
 # print('ok')
@@ -47,7 +50,7 @@ def get_args():
                         help="Batch size to infer with")
     parser.add_argument("--img_size", type=int, default=28,
                         help="Batch size to infer with")
-    parser.add_argument("--dataset", choices=["shape", "nine-circles", "OBC", "ChineseStyle", "CCS", "WH"],
+    parser.add_argument("--dataset", choices=["shape", "MASC", "OBC", "ChineseStyle", "CCS", "WH", "OBC3881", "eyes"],
                         help="Use kandinsky patterns dataset")
     parser.add_argument('--model_name', type=str, default='NPN',
                              help='Choose model to run.')
@@ -123,14 +126,14 @@ def main():
     # print(train_path)
 
     train_loader, val_loader, test_loader = get_data_loader(args)
-    if args.model_name == 'NPNCCS':
+    if args.model_name == 'NPNCCS' or args.model_name == 'ResNPN' or args.model_name == 'NPNEYE':
         net = model_name(device, args.class_num, args.batch_size).to(device)
     else:
         net = model_name(args.class_num).to(device)
     # train(net, epoch=10, args=args, data_loader=train_loader, device=args.device)
     if args.model_name == 'NPN' or args.model_name == 'NPN224':
         run = BaseRunner()
-    elif args.model_name == 'NPNCCS':
+    elif args.model_name == 'NPNCCS' or args.model_name == 'NPNEYE' or args.model_name == 'ResNPN':
         run = NPNMultiRunner(args.batch_size, args.class_num, args.lr)
     elif args.class_num > 2:
         run = MultiRunner(args.batch_size, args.lr)

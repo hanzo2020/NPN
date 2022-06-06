@@ -7,13 +7,13 @@ import numpy as np
 
 
 
-class NPNCCS(nn.Module):
+class NPNEYE(nn.Module):
     def __init__(self, device, class_num, batch_size):
-        super(NPNCCS, self).__init__()
+        super(NPNEYE, self).__init__()
         self.device = device
         self.batch_size = batch_size
         self.class_num = class_num
-        self.obj_dimension = 1024
+        self.obj_dimension = 32
         self.concept_embeddings = nn.Sequential(
             torch.nn.Embedding(self.class_num, self.obj_dimension),
             nn.BatchNorm1d(self.obj_dimension)
@@ -31,7 +31,7 @@ class NPNCCS(nn.Module):
         self.true = torch.nn.Parameter(utils.numpy_to_torch(
             np.random.uniform(0, 1, size=[1, self.obj_dimension]).astype(np.float32)), requires_grad=False)
         self.sim_scale = 10
-        self.net = nn.Sequential(#224X224
+        self.net = nn.Sequential(#448X448
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -41,6 +41,7 @@ class NPNCCS(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#112X112
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#56X56
@@ -50,12 +51,12 @@ class NPNCCS(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#64X14X14
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),#128X7X7
-            Flatten(),#1568
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+            Flatten(),
             nn.Linear(256 * 7 * 7, 4096),
             nn.LeakyReLU(0.1),
             # nn.ReLU(),

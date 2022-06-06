@@ -2,6 +2,33 @@ import torch
 import torch.nn.functional as F
 from utils import utils
 import numpy as np
+from PIL import Image, ImageChops
+import cv2
+
+
+def expand2square(img, background_color=255):
+    size = img.shape
+    height = size[0]
+    width = size[1]
+    # width, height = img.size
+    print(img.size)
+    print('width:' + str(width))
+    print('height:' + str(height))
+    if width == height:
+        return img
+    elif width > height:
+        i = (width - height) // 2
+        result = cv2.copyMakeBorder(img, i, i, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+        return result
+    else:
+        i = (height - width) // 2
+        result = cv2.copyMakeBorder(img, 0, 0, i, i, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+        return result
+
+img = cv2.imread('dog.jpg')
+img1 = expand2square(img)
+cv2.imwrite('dog1.jpg', img1)
+
 
 # class_num = 4
 # concept_embeddings = torch.nn.Embedding(class_num, 64)
@@ -17,11 +44,11 @@ import numpy as np
 # vector = torch.cat((x, zero), dim=-1)
 # print(vector)
 
-d = torch.rand(3, 5)
-# d1 = d.expand(2, 3, 5)
-# d2 = d1.transpose(0,1)
-d1 = d.shape[1]
-print(d1)
+# d = torch.rand(3, 5)
+# # d1 = d.expand(2, 3, 5)
+# # d2 = d1.transpose(0,1)
+# d1 = d.shape[1]
+# print(d1)
 
 # concept = torch.arange(0,6,dtype=int)
 # print(concept)

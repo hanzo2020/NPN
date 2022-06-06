@@ -45,6 +45,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\NPNEYE.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\NPNMultiRunner8.py">
           <value>
             <Attribute>
@@ -88,6 +95,13 @@
           </value>
         </entry>
         <entry key="\VGG10.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\VGG13.py">
           <value>
             <Attribute>
               <option name="separator" value="," />

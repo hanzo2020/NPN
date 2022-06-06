@@ -16,6 +16,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="cb@172.20.137.122:22 password (1)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/public/home/cb/workspace/NPN" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
     <option name="myAutoUpload" value="ALWAYS" />
   </component>
