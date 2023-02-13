@@ -5,31 +5,15 @@
 'python main.py --batch_size 4 --img_size 224 --dataset CCS --model_name ResNet18 --device 4 --random_seed 2022'
 
 'CCS4____________________________'
-'python main.py --batch_size 64 --class_num 4 --img_size 224 --dataset CCS --model_name NPNCCS --device 0 --random_seed 2022'
+#In CCS4, the lr of NPN need to setting 0.00001
+'python main.py --batch_size 64 --class_num 4 --img_size 224 --dataset CCS --model_name NPNCCS --device 0 --lr 0.00001 --random_seed 2022'
 'python main.py --batch_size 64 --class_num 4 --img_size 224 --dataset CCS --model_name AlexNet --device 0 --random_seed 2022'
 'python main.py --batch_size 64 --class_num 4 --img_size 224 --dataset CCS --model_name ResNet18 --device 1 --random_seed 2022'
 'python main.py --batch_size 64 --class_num 4 --img_size 224 --dataset CCS --model_name VGG10 --device 0 --random_seed 2022'
 
 'CCS8____________________________'
-'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name NPNCCS --device 0 --lr 0.00001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name VGG10 --device 1 --lr 0.00001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name ResNet18 --device 4 --lr 0.00001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name AlexNet --device 7 --lr 0.00001 --random_seed 2022'
+'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name NPNCCS --device 2 --lr 0.0001 --random_seed 2022'
+'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name VGG10 --device 0 --lr 0.0001 --random_seed 2022'
+'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name ResNet18 --device 4 --lr 0.0001 --random_seed 2022'
+'python main.py --batch_size 64 --class_num 8 --img_size 224 --dataset CCS --model_name AlexNet --device 7 --lr 0.0001 --random_seed 2022'
 
-'OBC____________________________'
-'python main.py --batch_size 16 --class_num 40 --img_size 224 --dataset OBC --model_name NPNCCS --device 5 --lr 0.000005 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 40 --img_size 224 --dataset OBC --model_name VGG10 --device 5 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 40 --img_size 224 --dataset OBC --model_name AlexNet --device 5 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 40 --img_size 224 --dataset OBC --model_name ResNet18 --device 5 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 40 --img_size 224 --dataset OBC --model_name ResNet34 --device 5 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 40 --img_size 224 --dataset OBC --model_name MobileNetV3_Small --device 6 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 64 --class_num 40 --img_size 224 --dataset OBC --model_name MobileNetV3_Large --device 5 --lr 0.0001 --random_seed 2022'
-
-'OBC3881____________________________'
-'python main.py --batch_size 64 --class_num 3881 --img_size 224 --dataset OBC3881 --model_name NPNCCS --device 0 --lr 0.001 --random_seed 2022'
-
-'EYE____________________________'
-'python main.py --batch_size 16 --class_num 3 --img_size 224 --dataset eyes --model_name NPNEYE --device 0 --lr 0.001 --random_seed 2022'
-'python main.py --batch_size 16 --class_num 3 --img_size 224 --dataset eyes --model_name VGG10 --device 5 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 16 --class_num 3 --img_size 224 --dataset eyes --model_name VGG11bn --device 4 --lr 0.0001 --random_seed 2022'
-'python main.py --batch_size 16 --class_num 3 --img_size 224 --dataset eyes --model_name VGG10 --device 2 --lr 0.001 --random_seed 2022'

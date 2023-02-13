@@ -4,7 +4,7 @@ import numpy as np
 from torch.autograd import Variable
 from Flatten import Flatten
 
-class VGG16(nn.Module):#input_size == 224X224
+class VGG11(nn.Module):#input_size == 224X224
     def __init__(self, class_num):
         super().__init__()
         # 3 * 224 * 224
@@ -12,14 +12,10 @@ class VGG16(nn.Module):#input_size == 224X224
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(True),
-            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(True),
-            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
@@ -28,7 +24,6 @@ class VGG16(nn.Module):#input_size == 224X224
             nn.ReLU(True),
             nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
             nn.ReLU(True),
-            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.conv4 = nn.Sequential(
@@ -36,13 +31,9 @@ class VGG16(nn.Module):#input_size == 224X224
             nn.ReLU(True),
             nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1),
             nn.ReLU(True),
-            nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.conv5 = nn.Sequential(
-            nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(True),
             nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1),
             nn.ReLU(True),
             nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1),

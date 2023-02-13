@@ -3,6 +3,27 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="C:\Users\10536\AppData\Local\JetBrains\PyCharm2021.2\remote_sources\-1551238944\-726006660\torch\_tensor.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\10536\AppData\Local\JetBrains\PyCharm2021.2\remote_sources\-1551238944\-726006660\torch\autograd\__init__.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\10536\AppData\Local\JetBrains\PyCharm2021.2\remote_sources\-1551238944\-726006660\torchvision\models\vision_transformer.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\AlexNet.py">
           <value>
             <Attribute>
@@ -11,6 +32,13 @@
           </value>
         </entry>
         <entry key="\EfficientNet.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Flatten.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -87,6 +115,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\TestModel.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\VGG.py">
           <value>
             <Attribute>
@@ -95,6 +130,13 @@
           </value>
         </entry>
         <entry key="\VGG10.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\VGG11.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
