@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="cb@172.20.137.122:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="chenbang2021@172.20.137.122:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="cb@172.20.137.102:22 password">
+      <paths name="chenbang2021@172.20.137.122:22">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="cb@172.20.137.122:22 password">
+      <paths name="chenbang2021@172.20.137.122:22 password">
         <serverdata>
           <mappings>
-            <mapping deploy="/public/home/cb/workspace/NPN" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="cb@172.20.137.122:22 password (1)">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/public/home/cb/workspace/NPN" local="$PROJECT_DIR$" />
+            <mapping deploy="/public/home/chenbang2021/workspace/NPN-connect" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

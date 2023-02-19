@@ -25,9 +25,9 @@ def expand2square(img, background_color=255):
         result = cv2.copyMakeBorder(img, 0, 0, i, i, cv2.BORDER_CONSTANT, value=[0, 0, 0])
         return result
 
-img = cv2.imread('dog.jpg')
+img = cv2.imread('bd.jpg')
 img1 = expand2square(img)
-cv2.imwrite('dog1.jpg', img1)
+cv2.imwrite('bd2.jpg', img1)
 
 
 # class_num = 4

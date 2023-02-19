@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import gc
-from sklearn.metrics import multilabel_confusion_matrix
+from sklearn.metrics import multilabel_confusion_matrix, cohen_kappa_score
 import os
 import logging
 import argparse
@@ -18,7 +18,7 @@ from dataset.dataset_img import DatasetImg
 
 class NPNMultiRunner(object):
     def __init__(self, batch_size, class_num, lr):
-        self.epoch = 150
+        self.epoch = 5
         # self.criterion = nn.BCELoss(reduction='mean')#二分类损失函数, log的底数为e
         self.criterion = nn.CrossEntropyLoss(reduction='sum')  # 二分类损失函数, log的底数为e
         self.softmax = nn.Softmax(dim=1)
@@ -33,7 +33,7 @@ class NPNMultiRunner(object):
         train_dict = {}
         count = 0
         acc = 0
-        matrix = np.zeros((self.class_num, 2, 2), dtype=np.int64)
+        #matrix = np.zeros((self.class_num, 2, 2), dtype=np.int64)
         # model.train()
         for j, data in tqdm(enumerate(data_loader), ncols=100, mininterval=1):
             imgs, target_set = map(lambda x: x.to(device), data)
@@ -45,12 +45,12 @@ class NPNMultiRunner(object):
             loss.backward()
             optimizer.step()
             acc += torch.sum(pred == target_set.data)
-            count += self.batch_size
-            cm = multilabel_confusion_matrix(target_set.cpu().detach(), pred.cpu(), labels=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
-            matrix = matrix + cm
+            count += len(pred)
+            #cm = multilabel_confusion_matrix(target_set.cpu().detach(), pred.cpu(), labels=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
+            #matrix = matrix + cm
         Acc = acc / count
         train_dict['Acc'] = Acc
-        train_dict['matrix'] = matrix
+        #train_dict['matrix'] = matrix
         print('Train Loss: {:.6f}'.format(train_loss / count) + 'Train Acc: {:.6f}'.format(Acc))
         return train_dict
 
@@ -68,26 +68,29 @@ class NPNMultiRunner(object):
                 train_best['epoch'] = i + 1
                 train_best['val_Acc'] = val_dict['Acc']
                 train_best['test_Acc'] = test_dict['Acc']
-                train_best['train_matrix'] = train_dict['matrix']
-                train_best['val_matrix'] = val_dict['matrix']
-                train_best['test_matrix'] = test_dict['matrix']
+                #train_best['train_matrix'] = train_dict['matrix']
+                #train_best['val_matrix'] = val_dict['matrix']
+                #train_best['test_matrix'] = test_dict['matrix']
             if val_dict['Acc'] > val_best['val_Acc']:
                 val_best['train_Acc'] = train_dict['Acc']
                 val_best['epoch'] = i + 1
                 val_best['val_Acc'] = val_dict['Acc']
                 val_best['test_Acc'] = test_dict['Acc']
-                val_best['train_matrix'] = train_dict['matrix']
-                val_best['val_matrix'] = val_dict['matrix']
+                #val_best['train_matrix'] = train_dict['matrix']
+                #val_best['val_matrix'] = val_dict['matrix']
                 val_best['test_matrix'] = test_dict['matrix']
+                val_best['test_kappa'] = test_dict['kappa']
+                torch.save(model, 'net.pth')
+                print('save model, epoch=' + str(val_best['epoch']))
             if test_dict['Acc'] > test_best['test_Acc']:
                 test_best['train_Acc'] = train_dict['Acc']
                 test_best['epoch'] = i + 1
                 test_best['val_Acc'] = val_dict['Acc']
                 test_best['test_Acc'] = test_dict['Acc']
-                test_best['train_matrix'] = train_dict['matrix']
-                test_best['val_matrix'] = val_dict['matrix']
-                test_best['test_matrix'] = test_dict['matrix']
-        torch.save(model, 'net.pth')
+                #test_best['train_matrix'] = train_dict['matrix']
+                #test_best['val_matrix'] = val_dict['matrix']
+                #test_best['test_matrix'] = test_dict['matrix']
+        #torch.save(model, 'net.pth')
         print(
             'best of train: epoch:' + str(train_best['epoch']) + 'train_Acc:{:.6f}'.format(train_best['train_Acc']) +
             'val_Acc:{:.6f}'.format(train_best['val_Acc']) + 'test_Acc:{:.6f}'.format(train_best['test_Acc']))
@@ -97,12 +100,16 @@ class NPNMultiRunner(object):
         print(
             'best of test: epoch:' + str(test_best['epoch']) + 'train_Acc:{:.6f}'.format(test_best['train_Acc']) +
             'val_Acc:{:.6f}'.format(test_best['val_Acc']) + 'test_Acc:{:.6f}'.format(test_best['test_Acc']))
-        test_matrix = val_best['test_matrix']
+        cy = val_best['test_matrix']
         print('best val epoch in test detail:')
-        for i in range(self.class_num):
-            pre = test_matrix[i, 1, 1] / (test_matrix[i, 1, 1] + test_matrix[i, 0, 1])
-            recall = test_matrix[i, 1, 1] / (test_matrix[i, 1, 1] + test_matrix[i, 1, 0])
-            print('class' + str(i) + ':  precision:{:.6f}'.format(pre) + 'recall:{:.6f}'.format(recall))
+        print('best val epoch in test kappa:{:.6f}'.format(val_best['test_kappa']))
+        for i in range(cy.shape[0]):
+            acc = (cy[i, 0, 0] + cy[i, 1, 1]) / (cy[i, 0, 0] + cy[i, 1, 1] + cy[i, 1, 1] + cy[i, 0, 1])
+            pre = cy[i, 0, 0] / (cy[i, 0, 0] + cy[i, 0, 1])
+            recall = cy[i, 0, 0] / (cy[i, 0, 0] + cy[i, 1, 0])
+            f1 = (2 * (pre * recall)) / (pre + recall)
+            print('class' + str(i) + ':' + 'acc:{:.6f}'.format(acc) + 'precision:{:.6f}'.format(pre) + 'recall:{:.6f}'.format(recall)
+                  + 'f1:{:.6f}'.format(f1))
 
 
 
@@ -112,20 +119,21 @@ class NPNMultiRunner(object):
         val_loss = 0
         count = 0
         acc = 0
-        matrix = np.zeros((self.class_num, 2, 2), dtype=np.int64)
-        for j, data in tqdm(enumerate(data_loader), leave=False, ncols=100, mininterval=1):
-            imgs, target_set = map(lambda x: x.to(device), data)
-            y_pred = model(imgs)
-            _, pred = torch.max(self.softmax(y_pred), 1)
-            loss = self.criterion(y_pred, target_set.to(torch.int64))
-            val_loss += loss.data
-            acc += torch.sum(pred == target_set.data)
-            count += self.batch_size
-            cm = multilabel_confusion_matrix(target_set.cpu().detach(), pred.cpu(), labels=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
-            matrix = matrix + cm
+        #matrix = np.zeros((self.class_num, 2, 2), dtype=np.int64)
+        with torch.no_grad():
+            for j, data in tqdm(enumerate(data_loader), leave=False, ncols=100, mininterval=1):
+                imgs, target_set = map(lambda x: x.to(device), data)
+                y_pred = model(imgs)
+                _, pred = torch.max(self.softmax(y_pred), 1)
+                loss = self.criterion(y_pred, target_set.to(torch.int64))
+                val_loss += loss.data
+                acc += torch.sum(pred == target_set.data)
+                count += len(pred)
+                #cm = multilabel_confusion_matrix(target_set.cpu().detach(), pred.cpu(), labels=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
+                #matrix = matrix + cm
         Acc = acc / count
         val_dict['Acc'] = Acc
-        val_dict['matrix'] = matrix
+        #val_dict['matrix'] = matrix
         print('Val Loss: {:.6f}'.format(val_loss / count) + 'Val Acc: {:.6f}'.format(val_dict['Acc']))
         return val_dict
 
@@ -133,22 +141,31 @@ class NPNMultiRunner(object):
         gc.collect()
         test_loss = 0
         test_dict = {}
+        total_pred = torch.tensor([])
+        total_target = torch.tensor([])
         count = 0
         acc = 0
         matrix = np.zeros((self.class_num, 2, 2), dtype=np.int64)
         # model.eval()
-        for j, data in tqdm(enumerate(data_loader), leave=False, ncols=100, mininterval=1):
-            imgs, target_set = map(lambda x: x.to(device), data)
-            y_pred = model(imgs)
-            _, pred = torch.max(self.softmax(y_pred), 1)
-            loss = self.criterion(y_pred, target_set.to(torch.int64))
-            test_loss += loss.data
-            acc += torch.sum(pred == target_set.data)
-            count += self.batch_size
-            cm = multilabel_confusion_matrix(target_set.cpu().detach(), pred.cpu(), labels=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
-            matrix = matrix + cm
+        with torch.no_grad():
+            for j, data in tqdm(enumerate(data_loader), leave=False, ncols=100, mininterval=1):
+                imgs, target_set = map(lambda x: x.to(device), data)
+                y_pred = model(imgs)
+                _, pred = torch.max(self.softmax(y_pred), 1)
+                loss = self.criterion(y_pred, target_set.to(torch.int64))
+                test_loss += loss.data
+                acc += torch.sum(pred == target_set.data)
+                count += len(pred)
+                total_pred = torch.cat((total_pred, pred.cpu()))
+                total_target = torch.cat((total_target, target_set.cpu().detach()))
+                #cm = multilabel_confusion_matrix(target_set.cpu().detach(), pred.cpu())
+                #kappa = cohen_kappa_score(target_set.cpu().detach(), pred)
+                #matrix = matrix + cm
+        cm = multilabel_confusion_matrix(total_target, total_pred)
+        kappa = cohen_kappa_score(total_target, total_pred)
         Acc = acc / count
         test_dict['Acc'] = Acc
-        test_dict['matrix'] = matrix
+        test_dict['matrix'] = cm
+        test_dict['kappa'] = kappa
         print('Test Loss: {:.6f}'.format(test_loss / count) + 'Test Acc: {:.6f}'.format(test_dict['Acc']))
         return test_dict

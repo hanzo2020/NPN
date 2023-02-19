@@ -80,6 +80,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\NPNMIX.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\NPNMultiRunner8.py">
           <value>
             <Attribute>
